@@ -18,7 +18,6 @@ npm-debug.log
 .publishrc
 
 # ==== build output
-dist
 web
 
 coverage
