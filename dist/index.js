@@ -37,10 +37,6 @@ function phone(phoneNumber, { country = '', validateMobilePrefix = true, strictD
     let defaultCountry = false;
     // if country provided, only reformat the phone number
     if (processedCountry) {
-        // remove leading 0s for all countries except 'CIV', 'COG'
-        if (!['CIV', 'COG'].includes(foundCountryPhoneData.alpha3)) {
-            processedPhoneNumber = processedPhoneNumber.replace(/^0+/, '');
-        }
         // if input 89234567890, RUS, remove the 8
         if (foundCountryPhoneData.alpha3 === 'RUS' && processedPhoneNumber.length === 11 && processedPhoneNumber.match(/^89/) !== null) {
             processedPhoneNumber = processedPhoneNumber.replace(/^8+/, '');
@@ -81,6 +77,12 @@ function phone(phoneNumber, { country = '', validateMobilePrefix = true, strictD
     if (!foundCountryPhoneData) {
         return invalidResult;
     }
+    // remove leading 0s for all countries except 'CIV', 'COG'
+    if (!['CIV', 'COG'].includes(foundCountryPhoneData.alpha3)) {
+        const phoneNumberWithoutCode = replaceCode(processedPhoneNumber.replace('+', ''), foundCountryPhoneData.country_code);
+        const phoneNumberWithoutLeadingZero = phoneNumberWithoutCode.replace(/^0+/, '');
+        processedPhoneNumber = `${foundCountryPhoneData.country_code}${phoneNumberWithoutLeadingZero}`;
+    }
     let validateResult = (0, utility_1.validatePhoneISO3166)(processedPhoneNumber, foundCountryPhoneData, validateMobilePrefix, hasPlusSign);
     if (validateResult) {
         return {
@@ -110,3 +112,10 @@ function phone(phoneNumber, { country = '', validateMobilePrefix = true, strictD
 exports.default = phone;
 exports.phone = phone;
 ;
+function replaceCode(phone, code) {
+    const index = phone.indexOf(code);
+    if (index !== -1) { // If "33" is found
+        return phone.substring(0, index) + phone.substring(index + code.length);
+    }
+    return phone;
+}
