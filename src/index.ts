@@ -75,9 +75,9 @@ export default function phone(phoneNumber: string, {
 			processedPhoneNumber = processedPhoneNumber.replace(/^8+/, '');
 		}
 
-		// if there's no plus sign and the phone number length is one of the valid length under country phone data
+		// if there's no plus sign and the phone number does not start with country code
 		// then assume there's no country code, hence add back the country code
-		if (!hasPlusSign && foundCountryPhoneData.phone_number_lengths.includes(processedPhoneNumber.length)) {
+		if (!hasPlusSign && !processedPhoneNumber.startsWith(foundCountryPhoneData.country_code)) {
 			processedPhoneNumber = `${foundCountryPhoneData.country_code}${processedPhoneNumber}`;
 		}
 	} else if (hasPlusSign) {
